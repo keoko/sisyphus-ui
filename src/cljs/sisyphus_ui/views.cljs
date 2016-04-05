@@ -17,10 +17,18 @@
    :label "go to About Page"
    :href "#/about"])
 
+
+(defn config-editor []
+  (let [editor (.edit js/ace "editor")]
+    (.setTheme editor "ace/theme/monokai")
+    (-> (.getSession editor)
+        (.setMode "ace/mode/yaml"))
+    [:div#editor]))
+
 (defn home-panel []
   [re-com/v-box
    :gap "1em"
-   :children [[home-title] [link-to-about-page]]])
+   :children [[home-title] [link-to-about-page] [config-editor]]])
 
 
 ;; about

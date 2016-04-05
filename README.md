@@ -58,3 +58,36 @@ The above command assumes that you have [phantomjs](https://www.npmjs.com/packag
 lein clean
 lein cljsbuild once min
 ```
+
+
+## TODO
+- aapp-db
+{:profiles []
+ :current-profile []
+ :current-variant ""
+ :data {}}
+ 
+- how to sync server-client data? long pull? -> sente?
+- client schema validation
+- client YAML conversion
+- YAML conversion?
+- transit protocol, edn?
+- features:
+  - display current-variant
+  - update current-variant locally
+  - update current-variant externally
+  - validate current-variant
+  - check HTTP etag? versions to avoid conflicts
+
+
+Server operations:
+- store YAML via post
+- get list of profiles
+- get profile
+- delete profile?
+
+
+## NICE TO HAVE
+- create cljsjs package for ace
+
+

@@ -27,6 +27,11 @@
                      :source-paths ["src/clj"]
                      :stylesheet sisyphus-ui.css/screen
                      :compiler {:output-to "resources/public/css/compiled/screen.css"
+                                :pretty-print? true}}
+                    {:id "editor"
+                     :source-paths ["src/clj"]
+                     :stylesheet sisyphus-ui.css/editor
+                     :compiler {:output-to "resources/public/css/compiled/editor.css"
                                 :pretty-print? true}}]}
 
   
