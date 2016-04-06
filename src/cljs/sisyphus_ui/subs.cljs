@@ -3,9 +3,9 @@
     (:require [re-frame.core :as re-frame]))
 
 (re-frame/register-sub
- :name
+ :current-profile-id
  (fn [db]
-   (reaction (:name @db))))
+   (reaction (:current-profile-id @db))))
 
 (re-frame/register-sub
  :active-panel

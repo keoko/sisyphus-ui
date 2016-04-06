@@ -61,12 +61,13 @@ lein cljsbuild once min
 
 
 ## TODO
-- aapp-db
+- app-db
 {:profiles []
  :current-profile []
  :current-variant ""
  :data {}}
  
+- how to create editor div and bind Ace editor
 - how to sync server-client data? long pull? -> sente?
 - client schema validation
 - client YAML conversion

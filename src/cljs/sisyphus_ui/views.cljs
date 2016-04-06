@@ -6,10 +6,10 @@
 ;; home
 
 (defn home-title []
-  (let [name (re-frame/subscribe [:name])]
+  (let [profile-id (re-frame/subscribe [:current-profile-id])]
     (fn []
       [re-com/title
-       :label (str "Hello from " @name ". This is the Home Page.")
+       :label (str "current profile: " (name@profile-id))
        :level :level1])))
 
 (defn link-to-about-page []

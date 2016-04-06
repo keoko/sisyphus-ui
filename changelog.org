@@ -1,0 +1,3 @@
+* ChangeLog
+** 05/04/2016 painful CSS positioning for Ace editor
+** 06/04/2016 if you change DB state manually, it doesn't reload figwheel, only views

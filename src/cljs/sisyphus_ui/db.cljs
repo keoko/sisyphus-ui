@@ -1,4 +1,4 @@
 (ns sisyphus-ui.db)
 
 (def default-db
-  {:name "re-frame"})
+  {:current-profile-id :app1-prd})
