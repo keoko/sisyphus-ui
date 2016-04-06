@@ -23,6 +23,10 @@
                {:id "s04" :label "A/B/S" :profile-id "app1-stg"}
                {:id "s05" :label "A/B/C" :profile-id "app1-stg"}])
 
+(def groups [{:id "g1" :label "jobs" :variant-id "p01"}
+             {:id "g2" :label "tests" :variant-id "p01"}
+             {:id "g3" :label "jobs" :variant-id "p03"}])
+
 
 (def cities [{:id "01" :label "Sydney"       :country-id "au"}
              {:id "02" :label "Melbourne"    :country-id "au"}
@@ -77,11 +81,67 @@
     [:div]))
 
 
+(defn profiles-dropdown [selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
+  [single-dropdown
+   :choices profiles
+   :model selected-profile-id
+   :width "300px"
+   :on-change #(do
+                 (reset! selected-profile-id %)
+                 (reset! filtered-variants (vec (filter-choices-by-keyword variants :profile-id @selected-profile-id)))
+                 (reset! selected-variant-id nil)
+                 (reset! selected-group-id nil)
+                 (reset! filtered-groups []))])
+
+
+(defn selected-profile-box [selected-profile-id]
+  [:div
+   [:strong "selected profile: "]
+   (if (nil? @selected-profile-id)
+     "None"
+     (str (:label (item-for-id @selected-profile-id profiles)) " [" @selected-profile-id "]"))])
+
+
+(defn variants-dropdown [selected-variant-id filtered-variants filtered-groups]
+  [single-dropdown
+   :choices filtered-variants
+   :model selected-variant-id
+   :width "300px"
+   :on-change #(do
+                 (reset! selected-variant-id %)
+                 (reset! filtered-groups (vec (filter-choices-by-keyword groups :variant-id @selected-variant-id))))])
+
+
+(defn selected-variant-box [selected-variant-id]
+  [:div
+   [:strong "selected variant: "]
+   (if (nil? @selected-variant-id)
+     "None"
+     (str (:label (item-for-id @selected-variant-id variants)) " [" @selected-variant-id "]"))])
+
+
+(defn groups-dropdown [selected-group-id filtered-groups]
+  [single-dropdown
+   :choices filtered-groups
+   :model selected-group-id
+   :width "300px"
+   :on-change #(reset! selected-group-id %)])
+
+(defn selected-group-box [selected-group-id]
+  [:div
+   [:strong "selected group: "]
+   (if (nil? @selected-group-id)
+     "None"
+     (str (:label (item-for-id @selected-group-id variants)) " [" @selected-group-id "]"))])
+
+
 
 (defn profiles-panel []
   (let [selected-profile-id (reagent/atom nil)
         filtered-variants (reagent/atom [])
-        selected-variant-id (reagent/atom nil)]
+        selected-variant-id (reagent/atom nil)
+        filtered-groups (reagent/atom [])
+        selected-group-id (reagent/atom nil)]
     (fn []
       [v-box
        :gap "10px"
@@ -89,33 +149,20 @@
                   [h-box
                    :gap "10px"
                    :align :center
-                   :children [[single-dropdown
-                               :choices profiles
-                               :model selected-profile-id
-                               :width "300px"
-                               :on-change #(do
-                                             (reset! selected-profile-id %)
-                                             (reset! filtered-variants (vec (filter-choices-by-keyword variants :profile-id @selected-profile-id)))
-                                             (reset! selected-variant-id nil))]
-                              [:div
-                               [:strong "selected profile: "]
-                               (if (nil? @selected-profile-id)
-                                 "None"
-                                 (str (:label (item-for-id @selected-profile-id profiles)) " [" @selected-profile-id "]"))]
+                   :children [[profiles-dropdown selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
+                              [selected-profile-box selected-profile-id]
                               [gap :size "10px"]
                               [h-box
                                :gap "10px"
                                :align :center
-                               :children [[single-dropdown
-                                           :choices filtered-variants
-                                           :model selected-variant-id
-                                           :width "300px"
-                                           :on-change #(reset! selected-variant-id %)]
-                                          [:div
-                                           [:strong "selected variant: "]
-                                           (if (nil? @selected-variant-id)
-                                             "None"
-                                             (str (:label (item-for-id @selected-variant-id variants)) " [" @selected-variant-id "]"))]]]]]]])))
+                               :children [[variants-dropdown selected-variant-id filtered-variants filtered-groups]
+                                          [selected-variant-box selected-variant-id]
+                                          [gap :size "10px"]
+                                          (h-box
+                                           :gap "10px"
+                                           :align :center
+                                           :children [[groups-dropdown selected-group-id filtered-groups]
+                                                      [selected-group-box selected-group-id]])]]]]]])))
 
 (defn home-panel []
   [re-com/v-box
