@@ -79,6 +79,8 @@ lein cljsbuild once min
   - update current-variant externally
   - validate current-variant
   - check HTTP etag? versions to avoid conflicts
+  - inherited configuration
+
 
 ## DOUBTS
 - how to create editor div and bind Ace editor
@@ -90,6 +92,8 @@ Server operations:
 - get list of profiles
 - get profile
 - delete profile?
+
+profiles dropdown -> variants dropdown -> config-groups dropdown
 
 
 ## NICE TO HAVE
