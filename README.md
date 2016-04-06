@@ -67,7 +67,7 @@ lein cljsbuild once min
  :current-variant ""
  :data {}}
  
-- how to create editor div and bind Ace editor
+- list of profiles      
 - how to sync server-client data? long pull? -> sente?
 - client schema validation
 - client YAML conversion
@@ -79,6 +79,10 @@ lein cljsbuild once min
   - update current-variant externally
   - validate current-variant
   - check HTTP etag? versions to avoid conflicts
+
+## DOUBTS
+- how to create editor div and bind Ace editor
+
 
 
 Server operations:
