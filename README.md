@@ -61,30 +61,18 @@ lein cljsbuild once min
 
 
 ## TODO
-- app-db
-{:profiles []
- :current-profile []
- :current-variant ""
- :data {}}
+- move profiles, variants and groups to db
+- load YAML group into editor
+- validate and update group (check etag to avoid conflicts)
  
-- list of profiles      
+
+## DOUBTS
+- how to create editor div and bind Ace editor
 - how to sync server-client data? long pull? -> sente?
 - client schema validation
 - client YAML conversion
 - YAML conversion?
 - transit protocol, edn?
-- features:
-  - display current-variant
-  - update current-variant locally
-  - update current-variant externally
-  - validate current-variant
-  - check HTTP etag? versions to avoid conflicts
-  - inherited configuration
-
-
-## DOUBTS
-- how to create editor div and bind Ace editor
-
 
 
 Server operations:
@@ -98,5 +86,7 @@ profiles dropdown -> variants dropdown -> config-groups dropdown
 
 ## NICE TO HAVE
 - create cljsjs package for ace
-
-
+- compare codewarrior and ace
+- display inherited configuration
+- display full configuration
+- client validation
