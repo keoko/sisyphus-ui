@@ -6,8 +6,8 @@
   [:.level1 {:color "green"}])
 
 (defstyles editor
-  [:#editor {:position "absolute"
-            :top 0
-            :right 0
-            :bottom 0
-            :left 0}])
+  [:#editor {:position "relative !important"
+            :margin-top "0px"
+            :height "500px"
+            :width "100%"}])
+

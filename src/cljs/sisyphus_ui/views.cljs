@@ -23,7 +23,7 @@
     (.setTheme editor "ace/theme/monokai")
     (-> (.getSession editor)
         (.setMode "ace/mode/yaml"))
-    [:div#editor]))
+    [:div]))
 
 (defn home-panel []
   [re-com/v-box
