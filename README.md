@@ -61,9 +61,9 @@ lein cljsbuild once min
 
 
 ## TODO
-- move profiles, variants and groups to db
 - load YAML group into editor
 - validate and update group (check etag to avoid conflicts)
+- create/delete group
  
 
 ## DOUBTS
@@ -73,6 +73,7 @@ lein cljsbuild once min
 - client YAML conversion
 - YAML conversion?
 - transit protocol, edn?
+- issues with writing collisions, too coarse-grained updates
 
 
 Server operations:
@@ -82,6 +83,8 @@ Server operations:
 - delete profile?
 
 profiles dropdown -> variants dropdown -> config-groups dropdown
+
+
 
 
 ## NICE TO HAVE

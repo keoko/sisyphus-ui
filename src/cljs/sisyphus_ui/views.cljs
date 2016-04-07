@@ -23,11 +23,20 @@
 
 
 (defn config-editor []
-  (let [editor (.edit js/ace "editor")]
-    (.setTheme editor "ace/theme/monokai")
-    (-> (.getSession editor)
-        (.setMode "ace/mode/yaml"))
-    [:div]))
+  (let [div-id "editor"]
+      (reagent/create-class
+       {:display-name "config-editor-component"
+
+        :component-did-mount
+        #(.setTimeout js/window 
+                      (fn [] (let [editor (.edit js/ace div-id)]
+                               (.setTheme editor "ace/theme/monokai")
+                               (-> (.getSession editor)
+                                   (.setMode "ace/mode/yaml")))))
+
+        :reagent-render
+        (fn []
+          [:div#editor])})))
 
 
 (defn profiles-dropdown [profiles variants selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
@@ -74,7 +83,9 @@
    :choices filtered-groups
    :model selected-group-id
    :width "300px"
-   :on-change #(reset! selected-group-id %)])
+   :on-change #(do 
+                 (reset! selected-group-id %)
+                 (set! (.-innerHTML (.getElementById js/document "editor")) "testtttt"))])
 
 (defn selected-group-box [variants selected-group-id]
   [:div
@@ -119,7 +130,7 @@
 (defn home-panel []
   [re-com/v-box
    :gap "1em"
-   :children [[home-title] [profiles-panel]]])
+   :children [[home-title] [profiles-panel] [config-editor]]])
 
 
 ;; about
