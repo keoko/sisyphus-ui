@@ -26,3 +26,8 @@
  :active-panel
  (fn [db _]
    (reaction (:active-panel @db))))
+
+(re-frame/register-sub
+ :group-data
+ (fn [db _]
+   (reaction (:group-data @db))))

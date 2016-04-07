@@ -15,9 +15,10 @@
              {:id "g2" :label "tests" :variant-id "p01"}
              {:id "g3" :label "jobs" :variant-id "p03"}])
 
-
+(def editor-data "# YAML data\n- row 1\n- row 2\n- row 3")
 
 (def default-db
   {:profiles profiles
    :variants variants
-   :groups groups})
+   :groups groups
+   :group-data editor-data})

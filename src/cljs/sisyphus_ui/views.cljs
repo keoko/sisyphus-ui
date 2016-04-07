@@ -23,7 +23,8 @@
 
 
 (defn config-editor []
-  (let [div-id "editor"]
+  (let [div-id "editor"
+        data (re-frame/subscribe [:group-data])]
       (reagent/create-class
        {:display-name "config-editor-component"
 
@@ -35,8 +36,8 @@
                                    (.setMode "ace/mode/yaml")))))
 
         :reagent-render
-        (fn []
-          [:div#editor])})))
+        (fn [] 
+          [:div#editor @data])})))
 
 
 (defn profiles-dropdown [profiles variants selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
