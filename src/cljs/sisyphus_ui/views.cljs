@@ -3,8 +3,8 @@
               [re-com.core :as re-com :refer [h-box v-box box gap single-dropdown input-text checkbox label title hyperlink-href p]]
               [re-com.dropdown :refer [filter-choices-by-keyword single-dropdown-args-desc]]
               [re-com.util     :refer [item-for-id]]
-              [reagent.core    :as    reagent]))
-
+              [reagent.core    :as    reagent]
+              cljsjs.codemirror))
 
 
 ;; home
@@ -23,21 +23,39 @@
 
 
 (defn config-editor []
-  (let [div-id "editor"
-        data (re-frame/subscribe [:group-data])]
+  (let [editor (reagent/atom {})]
       (reagent/create-class
        {:display-name "config-editor-component"
 
         :component-did-mount
-        #(.setTimeout js/window 
-                      (fn [] (let [editor (.edit js/ace div-id)]
-                               (.setTheme editor "ace/theme/monokai")
-                               (-> (.getSession editor)
-                                   (.setMode "ace/mode/yaml")))))
+        (fn [this]
+          (let [cm (.fromTextArea  js/CodeMirror
+                                   (reagent/dom-node this)
+                                   #js {:mode "yaml"
+                                        :lineNumbers true})]
+            (reset! editor {:editor cm :cursor (.getCursor cm)})
+            (.on cm "change" 
+                 #(do
+                    (when (not= (.getValue %) (.getValue (:editor @editor)))
+                      (swap! editor assoc :cursor (.getCursor %))
+                      (re-frame/dispatch [:change-group-data (.getValue %)])))))) 
+
+        :component-did-update 
+        (fn [comp]
+          (let [[_ data] (reagent/argv comp)]
+            (doto (:editor @editor)
+              (.setValue  data)
+              (.setCursor (:cursor @editor)))))
 
         :reagent-render
-        (fn [] 
-          [:div#editor @data])})))
+        (fn []
+          [:textarea#editor {:auto-complete "off"}])})))
+
+
+(defn editor-outer []
+  (let [data (re-frame/subscribe [:group-data])]
+    (fn []
+      [config-editor @data])))
 
 
 (defn profiles-dropdown [profiles variants selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
@@ -55,7 +73,7 @@
 
 (defn selected-profile-box [profiles selected-profile-id]
   [:div
-   [:strong "selected profile: "]
+   [:strong "profile: "]
    (if (nil? @selected-profile-id)
      "None"
      (str (:label (item-for-id @selected-profile-id profiles)) " [" @selected-profile-id "]"))])
@@ -73,24 +91,28 @@
 
 (defn selected-variant-box [variants selected-variant-id]
   [:div
-   [:strong "selected variant: "]
+   [:strong "variant: "]
    (if (nil? @selected-variant-id)
      "None"
      (str (:label (item-for-id @selected-variant-id variants)) " [" @selected-variant-id "]"))])
 
 
-(defn groups-dropdown [variants selected-group-id filtered-groups]
+(defn groups-dropdown [variants 
+                       selected-profile-id
+                       selected-variant-id
+                       selected-group-id
+                       filtered-groups]
   [single-dropdown
    :choices filtered-groups
    :model selected-group-id
    :width "300px"
    :on-change #(do 
                  (reset! selected-group-id %)
-                 (set! (.-innerHTML (.getElementById js/document "editor")) "testtttt"))])
+                 (re-frame/dispatch [:request-group-data @selected-profile-id @selected-variant-id @selected-group-id]))])
 
 (defn selected-group-box [variants selected-group-id]
   [:div
-   [:strong "selected group: "]
+   [:strong "group: "]
    (if (nil? @selected-group-id)
      "None"
      (str (:label (item-for-id @selected-group-id variants)) " [" @selected-group-id "]"))])
@@ -125,13 +147,18 @@
                                           (h-box
                                            :gap "10px"
                                            :align :center
-                                           :children [[groups-dropdown @variants selected-group-id filtered-groups]
+                                           :children [[groups-dropdown 
+                                                       @variants
+                                                       selected-profile-id
+                                                       selected-variant-id
+                                                       selected-group-id 
+                                                       filtered-groups]
                                                       [selected-group-box @variants selected-group-id]])]]]]]])))
 
 (defn home-panel []
   [re-com/v-box
    :gap "1em"
-   :children [[home-title] [profiles-panel] [config-editor]]])
+   :children [[home-title] [profiles-panel] [editor-outer]]])
 
 
 ;; about

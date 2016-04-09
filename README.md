@@ -62,6 +62,8 @@ lein cljsbuild once min
 
 ## TODO
 - load YAML group into editor
+  - load variant data
+  - load file content, instead of structure
 - validate and update group (check etag to avoid conflicts)
 - create/delete group
  
@@ -76,6 +78,11 @@ lein cljsbuild once min
 - issues with writing collisions, too coarse-grained updates
 
 
+## RE-FRAME
+- validate db with prismatic schema
+- figwheel with next/prev commands
+- middlewares: ex-log
+
 Server operations:
 - store YAML via post
 - get list of profiles
@@ -83,6 +90,10 @@ Server operations:
 - delete profile?
 
 profiles dropdown -> variants dropdown -> config-groups dropdown
+
+## ClojureScript
+- how to load cljsjs assets like CSS
+- figwheel readline support
 
 
 
