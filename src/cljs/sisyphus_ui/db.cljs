@@ -21,5 +21,8 @@
   {:profiles profiles
    :variants variants
    :groups groups
+   :selected-profile-id nil
+   :selected-variant-id nil
+   :selected-group-id nil
    :group-data editor-data
    :loading? false})

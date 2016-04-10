@@ -9,10 +9,12 @@
  (fn  [_ _]
    db/default-db))
 
+
 (re-frame/register-handler
  :set-active-panel
  (fn [db [_ active-panel]]
    (assoc db :active-panel active-panel)))
+
 
 (re-frame/register-handler
  :request-group-data
@@ -25,7 +27,6 @@
    (assoc db :loading? true)))
 
 
-
 (re-frame/register-handler
  :process-response
  (fn [db [_ response]]
@@ -34,6 +35,7 @@
    (-> db
        (assoc :loading? false)
        (assoc :group-data (get (js->clj response) "data")))))
+
 
 (re-frame/register-handler
  :process-bad-response
@@ -45,4 +47,14 @@
 (re-frame/register-handler
  :change-group-data
  (fn [db [_ data]]
+   (println "changing group data:" data)
    (assoc db :group-data data)))
+
+
+(re-frame/register-handler
+ :reset-group-data
+ (fn [db [_ data]]
+   (assoc db :group-data "")))
+
+
+

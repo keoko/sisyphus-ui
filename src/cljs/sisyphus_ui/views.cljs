@@ -1,6 +1,6 @@
 (ns sisyphus-ui.views
     (:require [re-frame.core :as re-frame]
-              [re-com.core :as re-com :refer [h-box v-box box gap single-dropdown input-text checkbox label title hyperlink-href p]]
+              [re-com.core :as re-com :refer [h-box v-box box gap single-dropdown input-text checkbox label title hyperlink-href p button]]
               [re-com.dropdown :refer [filter-choices-by-keyword single-dropdown-args-desc]]
               [re-com.util     :refer [item-for-id]]
               [reagent.core    :as    reagent]
@@ -22,7 +22,7 @@
    :href "#/about"])
 
 
-(defn config-editor []
+(defn editor-textarea []
   (let [editor (reagent/atom {})]
       (reagent/create-class
        {:display-name "config-editor-component"
@@ -36,26 +36,30 @@
             (reset! editor {:editor cm :cursor (.getCursor cm)})
             (.on cm "change" 
                  #(do
-                    (when (not= (.getValue %) (.getValue (:editor @editor)))
-                      (swap! editor assoc :cursor (.getCursor %))
-                      (re-frame/dispatch [:change-group-data (.getValue %)])))))) 
+                    (let [val (.getValue %)]
+                      ;; workaround: accessing directly app-db
+                      (when (not= val (:group-data @re-frame.db/app-db))
+                        (swap! editor assoc :cursor (.getCursor %))
+                        (re-frame/dispatch-sync [:change-group-data val]))))))) 
 
         :component-did-update 
         (fn [comp]
           (let [[_ data] (reagent/argv comp)]
+            (println "in update" data)
             (doto (:editor @editor)
               (.setValue  data)
               (.setCursor (:cursor @editor)))))
 
         :reagent-render
         (fn []
-          [:textarea#editor {:auto-complete "off"}])})))
+          [:textarea {:auto-complete "off"}])})))
 
 
-(defn editor-outer []
+(defn editor-textarea-outer []
   (let [data (re-frame/subscribe [:group-data])]
     (fn []
-      [config-editor @data])))
+      [editor-textarea  @data])))
+
 
 
 (defn profiles-dropdown [profiles variants selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
@@ -104,11 +108,11 @@
   (let [profiles (re-frame/subscribe [:profiles])
         variants (re-frame/subscribe [:variants])
         groups (re-frame/subscribe [:groups])
-        selected-profile-id (reagent/atom nil)
+        selected-profile-id (re-frame/subscribe [:selected-profile-id])
+        selected-variant-id (re-frame/subscribe [:selected-variant-id])
+        selected-group-id (re-frame/subscribe [:selected-group-id])
         filtered-variants (reagent/atom [])
-        selected-variant-id (reagent/atom nil)
-        filtered-groups (reagent/atom [])
-        selected-group-id (reagent/atom nil)]
+        filtered-groups (reagent/atom [])]
     (fn []
       [v-box
        :gap "10px"
@@ -132,10 +136,37 @@
                                                        selected-group-id 
                                                        filtered-groups]])]]]]]])))
 
+
+(defn editor-push-button []
+  [button
+   :label "push"
+   :on-click #(.alert js/window "push the content")
+   :class "btn-primary"])
+
+
+(defn editor-cancel-button []
+  (let [selected-profile-id (re-frame/subscribe [:selected-profile-id])
+        selected-variant-id (re-frame/subscribe [:selected-variant-id])
+        selected-group-id (re-frame/subscribe [:selected-group-id])]
+    [button
+     :label "cancel"
+     :on-click #(if (and @selected-profile-id @selected-variant-id @selected-group-id)
+                  (re-frame/dispatch [:request-group-data @selected-profile-id @selected-variant-id @selected-group-id])
+                  (re-frame/dispatch [:reset-group-data]))
+     :class "btn-danger"]))
+
+
+(defn editor-panel []
+  (let [])
+  [:div
+   [editor-textarea-outer]
+   [editor-push-button]
+   [editor-cancel-button]])
+
 (defn home-panel []
   [re-com/v-box
    :gap "1em"
-   :children [[home-title] [profiles-panel] [editor-outer]]])
+   :children [[home-title] [editor-panel]]])
 
 
 ;; about

@@ -31,3 +31,18 @@
  :group-data
  (fn [db _]
    (reaction (:group-data @db))))
+
+(re-frame/register-sub
+ :selected-profile-id
+ (fn [db _]
+   (reaction (:selected-profile-id @db))))
+
+(re-frame/register-sub
+ :selected-variant-id
+ (fn [db _]
+   (reaction (:selected-variant-id @db))))
+
+(re-frame/register-sub
+ :selected-group-id
+ (fn [db _]
+   (reaction (:selected-group-id @db))))
