@@ -70,6 +70,7 @@ lein cljsbuild once min
  
 
 ## DOUBTS
+- in editor how to update textarea content and app-db
 - how to sync server-client data? long pull? -> sente?
 - client schema validation
 - client YAML conversion

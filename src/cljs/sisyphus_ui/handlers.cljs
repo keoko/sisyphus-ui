@@ -56,5 +56,12 @@
  (fn [db [_ data]]
    (assoc db :group-data "")))
 
-
-
+(re-frame/register-handler
+ :push-group-data
+ (fn [db [_ profile-id variant-id group-id group-data]]
+   (println "TODO: push group-data")
+   #_(GET (str "http://localhost:3000/group/" profile-id "/" variant-id "/" group-id)
+        {:handler #(re-frame/dispatch [:process-response %1])
+         :response-format :json
+         :error-handler #(re-frame/dispatch [:process-bad-response %1])})
+   db))

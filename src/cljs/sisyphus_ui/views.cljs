@@ -45,7 +45,6 @@
         :component-did-update 
         (fn [comp]
           (let [[_ data] (reagent/argv comp)]
-            (println "in update" data)
             (doto (:editor @editor)
               (.setValue  data)
               (.setCursor (:cursor @editor)))))
@@ -138,10 +137,16 @@
 
 
 (defn editor-push-button []
+  (let [selected-profile-id (re-frame/subscribe [:selected-profile-id])
+        selected-variant-id (re-frame/subscribe [:selected-variant-id])
+        selected-group-id (re-frame/subscribe [:selected-group-id])
+        group-data (re-frame/subscribe [:group-data])]
   [button
    :label "push"
-   :on-click #(.alert js/window "push the content")
-   :class "btn-primary"])
+   :on-click #(if (and @selected-profile-id @selected-variant-id @selected-group-id)
+                (re-frame/dispatch [:push-group-data @selected-profile-id @selected-variant-id @selected-group-id group-data])
+                (.alert js/window "TODO: create profile or variant or group"))
+   :class "btn-primary"]))
 
 
 (defn editor-cancel-button []
