@@ -63,13 +63,13 @@ lein cljsbuild once min
 ## TODO
 - load YAML group into editor
   - load variant data
-  - load file content, instead of structure
+
 - validate and update group (check etag to avoid conflicts)
 - create/delete group
+- load profiles, variants and group structure
  
 
 ## DOUBTS
-- how to create editor div and bind Ace editor
 - how to sync server-client data? long pull? -> sente?
 - client schema validation
 - client YAML conversion
@@ -96,11 +96,10 @@ profiles dropdown -> variants dropdown -> config-groups dropdown
 - figwheel readline support
 
 
-
-
 ## NICE TO HAVE
 - create cljsjs package for ace
 - compare codewarrior and ace
 - display inherited configuration
 - display full configuration
 - client validation
+- different file formats: YAML, EDN, JSON

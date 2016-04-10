@@ -60,6 +60,7 @@
 
 (defn profiles-dropdown [profiles variants selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
   [single-dropdown
+   :placeholder "select a profile"
    :choices profiles
    :model selected-profile-id
    :width "300px"
@@ -71,16 +72,10 @@
                  (reset! filtered-groups []))])
 
 
-(defn selected-profile-box [profiles selected-profile-id]
-  [:div
-   [:strong "profile: "]
-   (if (nil? @selected-profile-id)
-     "None"
-     (str (:label (item-for-id @selected-profile-id profiles)) " [" @selected-profile-id "]"))])
-
 
 (defn variants-dropdown [variants groups selected-variant-id filtered-variants filtered-groups]
   [single-dropdown
+   :placeholder "select a variant"
    :choices filtered-variants
    :model selected-variant-id
    :width "300px"
@@ -89,13 +84,6 @@
                  (reset! filtered-groups (vec (filter-choices-by-keyword groups :variant-id @selected-variant-id))))])
 
 
-(defn selected-variant-box [variants selected-variant-id]
-  [:div
-   [:strong "variant: "]
-   (if (nil? @selected-variant-id)
-     "None"
-     (str (:label (item-for-id @selected-variant-id variants)) " [" @selected-variant-id "]"))])
-
 
 (defn groups-dropdown [variants 
                        selected-profile-id
@@ -103,20 +91,13 @@
                        selected-group-id
                        filtered-groups]
   [single-dropdown
+   :placeholder "select a group"
    :choices filtered-groups
    :model selected-group-id
    :width "300px"
    :on-change #(do 
                  (reset! selected-group-id %)
                  (re-frame/dispatch [:request-group-data @selected-profile-id @selected-variant-id @selected-group-id]))])
-
-(defn selected-group-box [variants selected-group-id]
-  [:div
-   [:strong "group: "]
-   (if (nil? @selected-group-id)
-     "None"
-     (str (:label (item-for-id @selected-group-id variants)) " [" @selected-group-id "]"))])
-
 
 
 (defn profiles-panel []
@@ -131,18 +112,15 @@
     (fn []
       [v-box
        :gap "10px"
-       :children [[p "profiles:"]
-                  [h-box
+       :children [[h-box
                    :gap "10px"
                    :align :center
                    :children [[profiles-dropdown @profiles @variants selected-profile-id filtered-variants selected-variant-id selected-group-id filtered-groups]
-                              [selected-profile-box @profiles selected-profile-id]
                               [gap :size "10px"]
                               [h-box
                                :gap "10px"
                                :align :center
                                :children [[variants-dropdown @variants @groups selected-variant-id filtered-variants filtered-groups]
-                                          [selected-variant-box @variants selected-variant-id]
                                           [gap :size "10px"]
                                           (h-box
                                            :gap "10px"
@@ -152,8 +130,7 @@
                                                        selected-profile-id
                                                        selected-variant-id
                                                        selected-group-id 
-                                                       filtered-groups]
-                                                      [selected-group-box @variants selected-group-id]])]]]]]])))
+                                                       filtered-groups]])]]]]]])))
 
 (defn home-panel []
   [re-com/v-box

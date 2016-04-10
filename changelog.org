@@ -1,3 +1,7 @@
 * ChangeLog
 ** 05/04/2016 painful CSS positioning for Ace editor
-** 06/04/2016 if you change DB state manually, it doesn't reload figwheel, only views
+** 06/04/2016 if you change DB state manually, it doesn't reload figwheel, only views. Glance at metosin
+** 07/04/2016 investigating re-com and how to link dropdowns
+** 08/04/2016 investigating JS editors: ace, codemirror, etc
+** 09/04/2016 about to lose my faith on reagent when trying to integrate external JS editor into a reagent component
+** 10/04/2016 finally achieved how to integrate codemirror into re-frame
