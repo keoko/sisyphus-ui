@@ -59,9 +59,29 @@
 (re-frame/register-handler
  :push-group-data
  (fn [db [_ profile-id variant-id group-id group-data]]
-   (println "TODO: push group-data")
-   #_(GET (str "http://localhost:3000/group/" profile-id "/" variant-id "/" group-id)
-        {:handler #(re-frame/dispatch [:process-response %1])
-         :response-format :json
-         :error-handler #(re-frame/dispatch [:process-bad-response %1])})
+   (println "push to " (str "http://localhost:3000/group/" profile-id "/" variant-id "/" group-id))
+   (println "group-data:" group-data)
+   
+   (POST (str "http://localhost:3000/group/" profile-id "/" variant-id "/" group-id)
+         {:params {:group-data group-data}
+          :handler #(.log js/console "successfully pushed group-data")
+          :error-handler #(.log js/console "error in pushing group-data: " %1)})
    db))
+
+
+(re-frame/register-handler
+ :set-profile-id
+ (fn [db [_ id]]
+   (assoc db :selected-profile-id id)))
+
+
+(re-frame/register-handler
+ :set-variant-id
+ (fn [db [_ id]]
+   (assoc db :selected-variant-id id)))
+
+
+(re-frame/register-handler
+ :set-group-id
+ (fn [db [_ id]]
+   (assoc db :selected-group-id id)))

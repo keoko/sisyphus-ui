@@ -68,10 +68,13 @@
    :model selected-profile-id
    :width "300px"
    :on-change #(do
-                 (reset! selected-profile-id %)
-                 (reset! filtered-variants (vec (filter-choices-by-keyword variants :profile-id @selected-profile-id)))
-                 (reset! selected-variant-id nil)
-                 (reset! selected-group-id nil)
+                 (re-frame/dispatch [:set-profile-id %])
+                 #_(reset! selected-profile-id %)
+                 (reset! filtered-variants (vec (filter-choices-by-keyword variants :profile-id %)))
+                 (re-frame/dispatch [:set-variant-id nil])
+                 (re-frame/dispatch [:set-group-id nil])                 
+                 #_(reset! selected-variant-id nil)
+                 #_(reset! selected-group-id nil)
                  (reset! filtered-groups []))])
 
 
@@ -83,8 +86,10 @@
    :model selected-variant-id
    :width "300px"
    :on-change #(do
-                 (reset! selected-variant-id %)
-                 (reset! filtered-groups (vec (filter-choices-by-keyword groups :variant-id @selected-variant-id))))])
+                 #_(reset! selected-variant-id %)
+                 (re-frame/dispatch [:set-variant-id %])                 
+                 (re-frame/dispatch [:set-group-id nil])    
+                 (reset! filtered-groups (vec (filter-choices-by-keyword groups :variant-id %))))])
 
 
 
@@ -99,8 +104,9 @@
    :model selected-group-id
    :width "300px"
    :on-change #(do 
-                 (reset! selected-group-id %)
-                 (re-frame/dispatch [:request-group-data @selected-profile-id @selected-variant-id @selected-group-id]))])
+                 #_(reset! selected-group-id %)
+                 (re-frame/dispatch [:set-group-id %])
+                 (re-frame/dispatch [:request-group-data @selected-profile-id @selected-variant-id %]))])
 
 
 (defn profiles-panel []
@@ -144,7 +150,7 @@
   [button
    :label "push"
    :on-click #(if (and @selected-profile-id @selected-variant-id @selected-group-id)
-                (re-frame/dispatch [:push-group-data @selected-profile-id @selected-variant-id @selected-group-id group-data])
+                (re-frame/dispatch [:push-group-data @selected-profile-id @selected-variant-id @selected-group-id @group-data])
                 (.alert js/window "TODO: create profile or variant or group"))
    :class "btn-primary"]))
 
@@ -171,7 +177,7 @@
 (defn home-panel []
   [re-com/v-box
    :gap "1em"
-   :children [[home-title] [editor-panel]]])
+   :children [[home-title] [profiles-panel] [editor-panel]]])
 
 
 ;; about
