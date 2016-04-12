@@ -4,10 +4,16 @@
               [ajax.core :refer [GET POST]]))
 
 
+(def sisyphus-host "http://localhost:3000")
+
 (re-frame/register-handler
  :initialize-db
  (fn  [_ _]
-   db/default-db))
+   (GET (str sisyphus-host "/profiles/")
+        {:handler #(re-frame/dispatch [:process-get-profiles-response %1])
+         :response-format :json
+         :error-handler #(re-frame/dispatch [:process-bad-get-profiles-response %1])})
+   {}))
 
 
 (re-frame/register-handler
@@ -19,16 +25,16 @@
 (re-frame/register-handler
  :request-group-data
  (fn [db [_ profile-id variant-id group-id]]
-   (.log js/console (str "--- http://localhost:3000/group/" profile-id "/" group-id))
-   (GET (str "http://localhost:3000/group/" profile-id "/" group-id)
-        {:handler #(re-frame/dispatch [:process-response %1])
+   (.log js/console (str "--- " sisyphus-host "/group/" profile-id variant-id group-id))
+   (GET (str sisyphus-host "/group/" profile-id variant-id group-id)
+        {:handler #(re-frame/dispatch [:process-get-group-data-response %1])
          :response-format :json
-         :error-handler #(re-frame/dispatch [:process-bad-response %1])})
+         :error-handler #(re-frame/dispatch [:process-bad-get-group-data-response %1])})
    (assoc db :loading? true)))
 
 
 (re-frame/register-handler
- :process-response
+ :process-get-group-data-response
  (fn [db [_ response]]
    (.log js/console (str "log:" response))
 
@@ -38,7 +44,7 @@
 
 
 (re-frame/register-handler
- :process-bad-response
+ :process-bad-get-group-dataresponse
  (fn [db [_ response]]
    (.alert js/window "request failed :'(")
    db))
@@ -59,11 +65,9 @@
 (re-frame/register-handler
  :push-group-data
  (fn [db [_ profile-id variant-id group-id group-data]]
-   (println "push to " (str "http://localhost:3000/group/" profile-id "/" variant-id "/" group-id))
-   (println "group-data:" group-data)
-   
-   (POST (str "http://localhost:3000/group/" profile-id "/" variant-id "/" group-id)
+   (POST (str sisyphus-host "/group/" profile-id variant-id group-id)
          {:params {:group-data group-data}
+          :response-format :json
           :handler #(.log js/console "successfully pushed group-data")
           :error-handler #(.log js/console "error in pushing group-data: " %1)})
    db))
@@ -85,3 +89,68 @@
  :set-group-id
  (fn [db [_ id]]
    (assoc db :selected-group-id id)))
+
+
+
+(defn parse-profiles
+  [s]
+  (->> (keys s)
+       (map #(hash-map :id (name %) :label (name %)))
+       flatten))
+
+(defn parse-variants
+  [s]
+  (let [parse-variant (fn [[kp vp]] 
+                        (map (fn [[k _]] 
+                               {:id k :label k :profile-id (name kp)}) vp))]
+    (->> s 
+         (map parse-variant)
+         flatten)))
+
+(defn parse-groups
+  [s]
+  (let [parse-group (fn [kp k v] 
+                      (map #(hash-map :id (name %) :label (name %) :variant-id k) v))
+        parse-variant (fn [[kp vp]] 
+                       (map (fn [[k v]] 
+                              (parse-group kp k v)) vp)) ]      
+    (->> s 
+         (map parse-variant)
+         flatten)))
+
+
+
+(re-frame/register-handler
+ :process-get-profiles-response
+ (fn [db [_ response]]
+   (.log js/console (str "log:" response))
+   (.log js/console (str "log-clj:" (js->clj response)))
+   (let [r (js->clj response)
+         profiles (parse-profiles r)
+         variants (parse-variants r)
+         groups (parse-groups r)]
+     (-> db
+         (assoc :loading? false)
+         (assoc :profiles profiles)
+         (assoc :variants variants)
+         (assoc :groups groups)))))
+
+#_(re-frame/register-handler
+ :process-get-profiles-response
+ (fn [db [_ response]]
+   (.log js/console (str "log:" response))
+   (let [r (js->clj response)
+         profiles (parse-profiles r)
+         #_variants (parse-variants r)
+         #_groups (parse-groups r)]
+     (-> db
+         (assoc :loading? false)
+         #_(assoc :profiles profiles)
+         #_(assoc :variants variants)
+         #_(assoc :groups groups)))))
+
+
+(re-frame/register-handler
+ :process-bad-get-profiles-response
+ (fn [db [_ response]]
+   (.alert js/window "cannot load profiles!!!")))

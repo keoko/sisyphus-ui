@@ -59,14 +59,20 @@ lein clean
 lein cljsbuild once min
 ```
 
+## Features
+## Backoffice
+- profiles list
+- variants list per profile
+- edit files
+
+
 
 ## TODO
+- filter-by-keyword does not work properly
 - load YAML group into editor
   - load variant data
-
-- validate and update group (check etag to avoid conflicts)
-- create/delete group
 - load profiles, variants and group structure
+- data-store is not loaded :'(
  
 
 ## DOUBTS
@@ -76,7 +82,8 @@ lein cljsbuild once min
 - client YAML conversion
 - YAML conversion?
 - transit protocol, edn?
-- issues with writing collisions, too coarse-grained updates
+- issues with writing collisions, too coarse-grained update
+- how to load cljsjs assets like CSS for codemirror
 
 
 ## RE-FRAME
@@ -85,21 +92,16 @@ lein cljsbuild once min
 - middlewares: ex-log
 
 Server operations:
-- store YAML via post
 - get list of profiles
 - get profile
 - delete profile?
 
 profiles dropdown -> variants dropdown -> config-groups dropdown
 
-## ClojureScript
-- how to load cljsjs assets like CSS
-- figwheel readline support
-
 
 ## NICE TO HAVE
-- create cljsjs package for ace
-- compare codewarrior and ace
+- create/delete group
+- validate and update group (check etag to avoid conflicts)
 - display inherited configuration
 - display full configuration
 - client validation

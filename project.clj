@@ -7,8 +7,7 @@
                  [secretary "1.2.3"]
                  [garden "1.3.2"]
                  [cljs-ajax "0.5.4"]
-                 [cljsjs/codemirror "5.11.0-1"]
-                 [cljsjs/highlight "8.4-0"]]
+                 [cljsjs/codemirror "5.11.0-1"]]
 
   :min-lein-version "2.5.3"
 
