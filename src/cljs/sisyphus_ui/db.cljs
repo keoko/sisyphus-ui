@@ -24,4 +24,5 @@
    :selected-variant-id nil
    :selected-group-id nil
    :group-data editor-data
-   :loading? false})
+   :loading? false
+   :notification {}})

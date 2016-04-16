@@ -6,6 +6,8 @@
 
 (def sisyphus-host "http://localhost:3000")
 
+
+;; init db
 (re-frame/register-handler
  :initialize-db
  (fn  [_ _]
@@ -14,6 +16,28 @@
          :response-format :json
          :error-handler #(re-frame/dispatch [:process-bad-get-profiles-response %1])})
    {}))
+
+
+
+
+;; notification 
+(defn reset-notification
+  [db]
+  (assoc db :notification {}))
+
+(defn set-info-notification
+  [db message]
+  (assoc db :notification {:type :info :message message}))
+
+(defn set-error-notification
+  [db message]  
+  (assoc db :notification {:type :danger :message message}))
+
+(re-frame/register-handler
+ :reset-notification
+ (fn [db _]
+   (reset-notification db)))
+
 
 
 (re-frame/register-handler
@@ -39,15 +63,14 @@
    (.log js/console (str "log:" response))
 
    (-> db
-       (assoc :loading? false)
+       (set-info-notification "loaded group data successfully.")
        (assoc :group-data (get (js->clj response) "data")))))
 
 
 (re-frame/register-handler
- :process-bad-get-group-dataresponse
+ :process-bad-get-group-data-response
  (fn [db [_ response]]
-   (.alert js/window "request failed :'(")
-   db))
+   (set-error-notification db "data cannot be retrived at this moment, contact your administrator ;)")))
 
 
 (re-frame/register-handler
@@ -62,14 +85,21 @@
  (fn [db [_ data]]
    (assoc db :group-data "")))
 
+
+(re-frame/register-handler
+ :process-bad-push-group-data
+ (fn [db [_ response]]
+   (.log js/console "error push data:" response)
+   (set-error-notification db "data cannot be pushed to the server :'(")))
+
+
 (re-frame/register-handler
  :push-group-data
  (fn [db [_ profile-id variant-id group-id group-data]]
    (POST (str sisyphus-host "/group/" profile-id variant-id group-id)
          {:params {:group-data group-data}
-          :response-format :json
           :handler #(.log js/console "successfully pushed group-data")
-          :error-handler #(.log js/console "error in pushing group-data: " %1)})
+          :error-handler #(re-frame/dispatch [:process-bad-push-group-data %1])})
    db))
 
 
@@ -89,8 +119,6 @@
  :set-group-id
  (fn [db [_ id]]
    (assoc db :selected-group-id id)))
-
-
 
 (defn parse-profiles
   [s]
@@ -153,4 +181,4 @@
 (re-frame/register-handler
  :process-bad-get-profiles-response
  (fn [db [_ response]]
-   (.alert js/window "cannot load profiles!!!")))
+   (set-error-notification db "cannot retrieved the list of profiles from the server. Please, check the server.")))

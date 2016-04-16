@@ -1,6 +1,6 @@
 (ns sisyphus-ui.views
     (:require [re-frame.core :as re-frame]
-              [re-com.core :as re-com :refer [h-box v-box box gap single-dropdown input-text checkbox label title hyperlink-href p button]]
+              [re-com.core :as re-com :refer [h-box v-box box gap single-dropdown input-text checkbox label title hyperlink-href p button alert-box]]
               [re-com.dropdown :refer [filter-choices-by-keyword single-dropdown-args-desc]]
               [re-com.util     :refer [item-for-id]]
               [reagent.core    :as    reagent]
@@ -167,8 +167,19 @@
      :class "btn-danger"]))
 
 
+
+(defn notification-panel
+  []
+  (let [notification (re-frame/subscribe [:notification])]
+    (when (seq @notification)
+      [alert-box
+       :alert-type (:type @notification)
+       :body [:p (:message @notification)]
+       :closeable? true
+       :on-close #(re-frame/dispatch [:reset-notification])])))
+
+
 (defn editor-panel []
-  (let [])
   [:div
    [editor-textarea-outer]
    [editor-push-button]
@@ -177,7 +188,10 @@
 (defn home-panel []
   [re-com/v-box
    :gap "1em"
-   :children [[home-title] [profiles-panel] [editor-panel]]])
+   :children [[home-title] 
+              [notification-panel]
+              [profiles-panel] 
+              [editor-panel]]])
 
 
 ;; about

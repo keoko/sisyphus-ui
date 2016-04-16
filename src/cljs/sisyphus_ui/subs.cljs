@@ -46,3 +46,8 @@
  :selected-group-id
  (fn [db _]
    (reaction (:selected-group-id @db))))
+
+(re-frame/register-sub
+ :notification
+ (fn [db _]
+   (reaction (:notification @db))))
